@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: products
-          image: ruwadregistry123.azurecr.io/products:latest
+          image: ruwadregistry123.azurecr.io/products:${{ github.sha }}
           ports:
             - containerPort: 8002
 ---
