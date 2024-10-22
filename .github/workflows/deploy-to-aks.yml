@@ -30,17 +30,17 @@ jobs:
       # Build and Push Docker Images
       - name: 'Build and Push Docker Images'
         run: |
-          # Build and push each service image
-          docker build ./products -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:${{ github.sha }}
+          # Build and push each service image with SHA tag
+          docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:${{ github.sha }} ./products
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:${{ github.sha }}
 
-          docker build ./shopping -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:${{ github.sha }}
+          docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:${{ github.sha }} ./shopping
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:${{ github.sha }}
 
-          docker build ./customer -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:${{ github.sha }}
+          docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:${{ github.sha }} ./customer
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:${{ github.sha }}
 
-          docker build ./proxy -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:${{ github.sha }}
+          docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:${{ github.sha }} ./proxy
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:${{ github.sha }}
 
       # Set up Kubernetes context
