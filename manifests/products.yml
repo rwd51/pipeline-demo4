@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: products
-          image: ruwadregistry123.azurecr.io/products:${{ github.sha }}
+          image: '${{ secrets.DOCKER_LOGIN }}/githubactions-aks-demo:${{ github.sha }}'  # Dynamic reference to the pushed image
           ports:
             - containerPort: 8002
 ---
