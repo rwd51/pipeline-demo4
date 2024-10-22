@@ -24,6 +24,7 @@ metadata:
   name: products
 spec:
   ports:
+    type: LoadBalancer  # Change this line to make it a LoadBalancer
     - port: 8002
       targetPort: 8002
   selector:
