@@ -1,0 +1,61 @@
+name: Build and Deploy to AKS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_CONTAINER_REGISTRY: "ruwadregistry123.azurecr.io"
+  RESOURCE_GROUP: "practise-aks-cluster"
+  CLUSTER_NAME: "ruwad51"
+  DEPLOYMENT_MANIFEST_PATH: "./manifests"  # Path to your manifests folder
+
+jobs:
+  buildImage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.REGISTRY_USERNAME }}
+          tenant-id: ${{ secrets.AZURE_CREDENTIALS.tenantId }}
+          subscription-id: ${{ secrets.AZURE_CREDENTIALS.subscriptionId }}
+
+      - name: Build and Push to ACR
+        run: |
+          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}/products:latest --registry ruwadregistry123 --resource-group ${{ env.RESOURCE_GROUP }} ./products
+          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}/shopping:latest --registry ruwadregistry123 --resource-group ${{ env.RESOURCE_GROUP }} ./shopping
+          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}/customer:latest --registry ruwadregistry123 --resource-group ${{ env.RESOURCE_GROUP }} ./customer
+          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}/nginx-proxy:latest --registry ruwadregistry123 --resource-group ${{ env.RESOURCE_GROUP }} ./proxy
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: buildImage
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.REGISTRY_USERNAME }}
+          tenant-id: ${{ secrets.AZURE_CREDENTIALS.tenantId }}
+          subscription-id: ${{ secrets.AZURE_CREDENTIALS.subscriptionId }}
+
+      - name: Set up K8s context
+        uses: azure/aks-set-context@v1
+        with:
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          admin: false
+
+      - name: Deploy to AKS
+        uses: azure/k8s-deploy@v1
+        with:
+          manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}/*.yaml
+          images: |
+            ${{ env.AZURE_CONTAINER_REGISTRY }}/products:latest
+            ${{ env.AZURE_CONTAINER_REGISTRY }}/shopping:latest
+            ${{ env.AZURE_CONTAINER_REGISTRY }}/customer:latest
+            ${{ env.AZURE_CONTAINER_REGISTRY }}/nginx-proxy:latest
