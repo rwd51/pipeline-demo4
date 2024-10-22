@@ -23,7 +23,7 @@ kind: Service
 metadata:
   name: products
 spec:
-  type: LoadBalancer  # LoadBalancer should be set here in the spec level
+  type: NodePort  # LoadBalancer should be set here in the spec level
   ports:
     - port: 8002
       targetPort: 8002
