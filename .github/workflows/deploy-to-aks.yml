@@ -21,9 +21,10 @@ jobs:
       - name: Log in to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.REGISTRY_USERNAME }}
-          tenant-id: ${{ secrets.AZURE_CREDENTIALS.tenantId }}
-          subscription-id: ${{ secrets.AZURE_CREDENTIALS.subscriptionId }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}  # Replace with your secret name
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}  # Replace with your secret name
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}  # Replace with your secret name
+
 
       - name: Build and Push to ACR
         run: |
