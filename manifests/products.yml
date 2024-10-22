@@ -23,9 +23,11 @@ kind: Service
 metadata:
   name: products
 spec:
-  type: NodePort  # LoadBalancer should be set here in the spec level
+  type: NodePort
   ports:
-    - port: 8002
-      targetPort: 8002
+    - port: 8002       # The port that your application is exposed on
+      targetPort: 8002 # The port in your container
+      nodePort: 32103  # The NodePort for external access
+
   selector:
     app: products
