@@ -31,17 +31,17 @@ jobs:
       - name: 'Build and Push Docker Images'
         run: |
           # Build and push each service image
-          docker build ./products -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:latest
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:latest
+          docker build ./products -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:${{ github.sha }}
 
-          docker build ./shopping -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:latest
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:latest
+          docker build ./shopping -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:${{ github.sha }}
 
-          docker build ./customer -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:latest
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:latest
+          docker build ./customer -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:${{ github.sha }}
 
-          docker build ./proxy -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:latest
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:latest
+          docker build ./proxy -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:${{ github.sha }}
 
       # Set up Kubernetes context
       - name: 'Set up K8s context'
@@ -51,13 +51,19 @@ jobs:
           cluster-name: 'ruwad51'  # Replace with your AKS cluster name
           admin: false
 
-      # Deploy to AKS
+      # Deploy to AKS using all manifests
       - name: 'Deploy to AKS'
         uses: azure/k8s-deploy@v1
         with:
-          manifests: ./manifests/*.yaml  # Path to your Kubernetes manifests
+          manifests: |
+            ./manifests/customer.yml
+            ./manifests/mongo-pvc.yml
+            ./manifests/nginx-proxy.yml
+            ./manifests/nosql-db.yml
+            ./manifests/products.yml
+            ./manifests/shopping.yml
           images: |
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:latest
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:latest
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:latest
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:latest
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/products:${{ github.sha }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/shopping:${{ github.sha }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/customer:${{ github.sha }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/nginx-proxy:${{ github.sha }}
