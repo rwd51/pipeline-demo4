@@ -23,8 +23,8 @@ kind: Service
 metadata:
   name: products
 spec:
+  type: LoadBalancer  # LoadBalancer should be set here in the spec level
   ports:
-    type: LoadBalancer  # Change this line to make it a LoadBalancer
     - port: 8002
       targetPort: 8002
   selector:
