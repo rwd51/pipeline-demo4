@@ -2,9 +2,9 @@ name: AKS Deployment
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -13,8 +13,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Docker Build
-      run: docker build -t '${{ secrets.DOCKER_LOGIN }}/githubactions-aks-demo:${{ github.sha }}' .
+    - name: Docker Build for Products
+      run: docker build -t '${{ secrets.DOCKER_LOGIN }}/githubactions-aks-demo:${{ github.sha }}' ./products
+
+    - name: Docker Build for Shopping
+      run: docker build -t '${{ secrets.DOCKER_LOGIN }}/githubactions-aks-demo:${{ github.sha }}' ./shopping
+
+    - name: Docker Build for Customer
+      run: docker build -t '${{ secrets.DOCKER_LOGIN }}/githubactions-aks-demo:${{ github.sha }}' ./customer
+
+    - name: Docker Build for Nginx Proxy
+      run: docker build -t '${{ secrets.DOCKER_LOGIN }}/githubactions-aks-demo:${{ github.sha }}' ./proxy
 
     - name: Docker Login
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username '${{ secrets.DOCKER_LOGIN }}' --password-stdin
@@ -26,8 +35,8 @@ jobs:
       uses: Azure/aks-set-context@v1
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
-        resource-group: practise-aks-cluster  # Update with your actual resource group
-        cluster-name: ruwad51  # Update with your actual AKS cluster name
+        resource-group: practise-aks-cluster
+        cluster-name: ruwad51
 
     - name: Create K8s Secret
       uses: Azure/k8s-create-secret@v1.1
