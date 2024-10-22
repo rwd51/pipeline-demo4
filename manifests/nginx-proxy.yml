@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: nginx-proxy
-          image: ruwadregistry123.azurecr.io/nginx-proxy:latest
+          image: ruwadregistry123.azurecr.io/nginx-proxy:${{ github.sha }}
           ports:
             - containerPort: 80
 ---
