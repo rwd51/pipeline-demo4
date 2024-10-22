@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: shopping
-          image: ruwadregistry123.azurecr.io/shopping:latest
+          image: ruwadregistry123.azurecr.io/shopping:${{ github.sha }}
           ports:
             - containerPort: 8003
 ---
