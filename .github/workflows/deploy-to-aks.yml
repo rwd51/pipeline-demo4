@@ -27,7 +27,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      # Build and push images
+      # Build and Push Docker Images
       - name: 'Build and Push Docker Images'
         run: |
           # Build and push each service image
